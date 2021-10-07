@@ -31,14 +31,29 @@ app.post("/api/notes", (req, res) => {
             note_id: uuid(),
         };
 
+        fs.readFile("./db/db.json", "utf8", (err, data) => {
+            if (err) {
+                console.error(err);
+            } else {
+                const parsedNotes = JSON.parse(data);
+
+                parsedNotes.push(newNote);
+
+                fs.writeFile("./db/db.json", JSON.stringify(parsedNotes), (err) => {
+                    err ? console.err(err) : console.log("Successfully added note!")
+                });
+            }
+        });
         const response = {
-            status: "success",
+            status: 'success',
             body: newNote,
         };
+        
+        console.log(response);
         res.status(201).json(response);
     } else {
-        res.status(500).json("Error in posting review");
-    }
+        res.status(500).json('Error in posting review');
+      }
 })
 
 app.get("*", (req, res) => {
