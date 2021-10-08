@@ -18,8 +18,9 @@ app.get("/notes", (req, res) => {
 });
 
 app.get("/api/notes", (req, res) => {
-    fs.readFile("./db/db.json", function (err, data) { 
-        res.json(data); 
+    fs.readFile("./db/db.json", "utf8", (err, data) => { 
+        console.log(JSON.parse(data));
+        res.json(JSON.parse(data)); 
     })
 });
 
