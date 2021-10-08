@@ -19,7 +19,6 @@ app.get("/notes", (req, res) => {
 
 app.get("/api/notes", (req, res) => {
     fs.readFile("./db/db.json", "utf8", (err, data) => { 
-        console.log(JSON.parse(data));
         res.json(JSON.parse(data)); 
     })
 });
@@ -43,7 +42,7 @@ app.post("/api/notes", (req, res) => {
                 parsedNotes.push(newNote);
 
                 fs.writeFile("./db/db.json", JSON.stringify(parsedNotes), (err) => {
-                    err ? console.err(err) : console.log("Successfully added note!")
+                    err ? console.error(err) : console.log("Successfully added note!")
                 });
             }
         });
@@ -52,12 +51,27 @@ app.post("/api/notes", (req, res) => {
             body: newNote,
         };
         
-        console.log(response);
         res.status(201).json(response);
     } else {
         res.status(500).json('Error in posting review');
       }
 })
+
+// delete request
+app.delete("/api/notes/:id", (req, res) => {
+    fs.readFile("./db/db.json",  "utf8", (err, data) => {
+        const parsedNotes = JSON.parse(data);
+        for (let i = 0; i < parsedNotes.length; i++) {
+            if (parsedNotes[i].id === req.params.id) {
+                parsedNotes.splice(i, 1);
+            }
+        }
+        fs.writeFile("./db/db.json", JSON.stringify(parsedNotes), (err) => {
+            err ? console.error(err) : console.log("Succesfully deleted note!")
+        })
+        res.json(parsedNotes)
+    });
+});
 
 app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/index.html"))
